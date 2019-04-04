@@ -43,8 +43,7 @@ class Database {
   /**
    *
    * @param {string} table - Name of the table to create
-   * @param {{string: string}} columns - Array containing key value pairs of column names and SQL types (e.g. VARCHAR(50) NOT NULL or INT NOT NULL AUTO_INCREMENT PRIMARY KEY).
-   * @note Use {} if building a table based on another table
+   * @param {{string: string}} columns - Array containing key value pairs of column names and SQL types (e.g. VARCHAR(50) NOT NULL or INT NOT NULL AUTO_INCREMENT PRIMARY KEY). (Use an empty string if you are building from a different table)
    * @param {string} other - OPTIONAL: Existing table to build new table from
    * @param {[string]} otherCol - OPTIONAL: Array of strings that refer to the column names from the existing table. (Will accept *)
    * @param {string} identifiers - OPTIONAL: Logic to go inside a WHERE statement. Should be in form similar to: column_name = value AND column_name = value
