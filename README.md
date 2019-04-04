@@ -34,7 +34,7 @@ Utilizing the async/await syntax allows us to avoid callback hell. When this is 
 ## Methods
 * .create(table, columns, values)
 * .read(table, properties, identifiers)
-* .update(table, update, keys)
+* .update(table, update, key)
 * .delete(table, key)
 * .makeTable(table, columns,  other, otherCol, identifiers)
 * .query(command, values)
@@ -47,12 +47,13 @@ Create takes in the name of the table where you want to insert information, an a
 
 ### .read(table, properties, identifiers)
 Returns all the values as an array. Table should be a string, properties should be an array of the columns you would like returned, identifiers is optional and should contain a string with your modifiers (e.g. "name = %c%" will retrun all queries where the name contains a c) 
+
 **This runs async, so you should either use .then().catch() or use the async/await syntax** 
+
 ```let results = await myDb.read("myTable", ["name"], "id = 5")```
 
-### .update(table, update, keys)
-
-### .update(table, update, keys)
+### .update(table, update, key)
+Updates a given entry in the table identified. Table should be a string, update is an object of key value pairs where the key is the column being updated and the value is what you are changing that column's value to. Key is the unique identifier of the entry you want to update in the form "unique_identifier = unique_key".
 
 ### .delete(table, key)
 
