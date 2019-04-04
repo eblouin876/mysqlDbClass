@@ -21,10 +21,10 @@ let Database = require('./database.js')
 async function initDbs() {
 
 let myDb = new Database('myDb')
-let myOtherDb new Database('myOtherDb')
+// let myOtherDb new Database('myOtherDb')
 
 await myDb.connect()
-await myOtherDb.connect()
+// await myOtherDb.connect()
 }
 
 initDbs()
