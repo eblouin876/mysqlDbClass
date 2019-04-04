@@ -16,18 +16,19 @@ DB_PASS='my_pass'
 ```
 In the file that you are working in, declare your database (or databases) at the top.
 ```javascript
-let Database = require('./database.js')
+let Database = require('./database.js');
 
-async function initDbs() {
+let myDb = "";
 
-let myDb = new Database('myDb')
-let myOtherDb new Database('myOtherDb')
+async function initDb() {
 
-await myDb.connect()
-await myOtherDb.connect()
+let myDb = new Database("myDb");
+
+await db.connect();
+
 }
 
-initDbs()
+initDb();
 ```
 Utilizing the async/await syntax allows us to avoid callback hell. When this is initialized in this way, the methods on myDb or myOtherDb will be available globally. When running .connect(), the app will connect to the mysql database with the name you passed into the constructor (myDb and myOtherDb in this case). If the database does not exist, it will create a new database with that name. 
 
@@ -59,7 +60,7 @@ Updates a given entry in the table identified. Table should be a string, update 
 Deletes an entry in the table identified. Table should be a string. Key is optional, and is the unique identifier of the entry you want to delete in the form "unique_identifier = unique_key".
 
 ### .makeTable(table, columns, other, otherCol, identifiers)
-Makes a table in the database. Table is a string that will become the table name, columns is an array with key value pairs where they key is the name of the column and the value is the SQL type for that column (e.g. VARCHAR(50) NOT NULL or INT NOT NULL AUTO_INCREMENT PRIMARY KEY). Other, otherCol, and identifiers are optional.  Passing in these three arguments allows the user to build a table that is built from an already existing table **in the same database**. Other refers to the name of the existing table and will be a string, otherCol will be an array of strings that represents the columns you want to use from the other table, and identifiers refers to the specific parts you would want to bring into your new table (e.g. "unique_id BETWEEN 1 AND 100")
+Makes a table in the database. Table is a string that will become the table name, columns is an object with key value pairs where they key is the name of the column and the value is the SQL type for that column (e.g. VARCHAR(50) NOT NULL or INT NOT NULL AUTO_INCREMENT PRIMARY KEY). Other, otherCol, and identifiers are optional.  Passing in these three arguments allows the user to build a table that is built from an already existing table **in the same database**. Other refers to the name of the existing table and will be a string, otherCol will be an array of strings that represents the columns you want to use from the other table, and identifiers refers to the specific parts you would want to bring into your new table (e.g. "unique_id BETWEEN 1 AND 100")
 
 ### .query(command, values)
 Primarily an internal function that won't be used by the user. In some cases, if you need to make a query that is otherwise undefinied, you may use .query(). Command will be a string that contains the whole SQL command. Values is optional, and can contain an array of values to be used on SET or UPDATE with the ? in SQL Queries. Returns as a promise
