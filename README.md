@@ -35,15 +35,36 @@ Utilizing the async/await syntax allows us to avoid callback hell. When this is 
 * .create(table, columns, values)
 * .read(table, properties, identifiers)
 * .update(table, update, keys)
-* .delete(table, key
+* .delete(table, key)
 * .makeTable(table, columns,  other, otherCol, identifiers)
 * .query(command, values)
 * .connect()
 * .endConnection()
 * .getDatabases()
 
-# .create(table, columns, values)
-Create takes in the name of the table where you want to insert information, the columns that you want to add to, and the values that you want to add in those columns. Table should be a string, where columns and valuse will be arrays of the same length. The table you are referencing must already exist in the database. If it does not already exist, you can run .makeTable() first.
+### .create(table, columns, values)
+Create takes in the name of the table where you want to insert information, an array of the columns that you want to add to, and the values that you want to add in those columns. Table should be a string, where columns and valuse will be arrays of the same length. The table you are referencing must already exist in the database. If it does not already exist, you can run .makeTable() first.
+
+### .read(table, properties, identifiers)
+Returns all the values as an array. Table should be a string, properties should be an array of the columns you would like returned, identifiers is optional and should contain a string with your modifiers (e.g. "name = %c%" will retrun all queries where the name contains a c) 
+**This runs async, so you should either use .then().catch() or use the async/await syntax** 
+```let results = await myDb.read("myTable", ["name"], "id = 5")```
+
+### .update(table, update, keys)
+
+### .update(table, update, keys)
+
+### .delete(table, key)
+
+### .makeTable(table, columns,  other, otherCol, identifiers)
+
+### .query(command, values)
+
+### .connect()
+
+### .endConnection()
+
+### .getDatabases()
 
 ## Support
 If you come across any bugs or have any suggestions to improve the code, please feel free to comment! I would love to improve the code and increase the usability, readibility, and utility of this to (hopefully) become an npm package. 
