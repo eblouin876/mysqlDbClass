@@ -56,16 +56,22 @@ Returns all the values as an array. Table should be a string, properties should 
 Updates a given entry in the table identified. Table should be a string, update is an object of key value pairs where the key is the column being updated and the value is what you are changing that column's value to. Key is the unique identifier of the entry you want to update in the form "unique_identifier = unique_key".
 
 ### .delete(table, key)
+Deletes an entry in the table identified. Table should be a string. Key is optional, and is the unique identifier of the entry you want to delete in the form "unique_identifier = unique_key".
 
-### .makeTable(table, columns,  other, otherCol, identifiers)
+### .makeTable(table, columns, other, otherCol, identifiers)
+Makes a table in the database. Table is a string that will become the table name, columns is an array with key value pairs where they key is the name of the column and the value is the SQL type for that column (e.g. VARCHAR(50) NOT NULL or INT NOT NULL AUTO_INCREMENT PRIMARY KEY). Other, otherCol, and identifiers are optional.  Passing in these three arguments allows the user to build a table that is built from an already existing table **in the same database**. Other refers to the name of the existing table and will be a string, otherCol will be an array of strings that represents the columns you want to use from the other table, and identifiers refers to the specific parts you would want to bring into your new table (e.g. "unique_id BETWEEN 1 AND 100")
 
 ### .query(command, values)
+Primarily an internal function that won't be used by the user. In some cases, if you need to make a query that is otherwise undefinied, you may use .query(). Command will be a string that contains the whole SQL command. Values is optional, and can contain an array of values to be used on SET or UPDATE with the ? in SQL Queries. Returns as a promise
 
 ### .connect()
+Allows the user to connect to the database. When running .connect(), the app will connect to the mysql database with the name you passed into the constructor (myDb and myOtherDb in this case). If the database does not exist, it will create a new database with that name. .connect() runs async, so it should either be called inside an ```async function init() {await db.connect()}``` or with the ```db.connect().then().catch(err => console.log(err))``` syntax
 
 ### .endConnection()
+Ends the connection with the database. Can be reinitialized later in the program or inside another function with .connect()
 
 ### .getDatabases()
+Returns all of the mysql databases that exist on the client as a JSON object. **Note:** As this runs async, the data will be available in a .then() call or with the async/await syntax.
 
 ## Support
 If you come across any bugs or have any suggestions to improve the code, please feel free to comment! I would love to improve the code and increase the usability, readibility, and utility of this to (hopefully) become an npm package. 
