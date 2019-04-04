@@ -14,7 +14,30 @@ To use the database class in a node based project, clone database.js into your d
 DB_USER='my_user'
 DB_PASS='my_pass'
 ```
+In the file that you are working in, declare your database (or databases) at the top.
+```javascript
+let Database = require('./database.js')
 
+async function initDbs() {
+let myDb = new Database('myDb')
+let myOtherDb new Database('myOtherDb')
+await myDb.connect()
+await myOtherDb.connect()
+}
+initDbs()
+```
+Utilizing the async/await syntax allows us to avoid callback hell. When this is initialized in this way, the methods on myDb or myOtherDb will be available globally. 
+
+#Methods include:
+* .create(table, columns, values)
+* .makeTable(table, columns,  other, otherCol, identifiers)
+* .read(table, properties, identifiers)
+* .update(table, update, keys)
+* .delete(table, key)
+* .query(command, values)
+* .connect()
+* .endConnection()
+* .getDatabases()
 
 
 ## Support
