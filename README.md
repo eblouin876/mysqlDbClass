@@ -18,16 +18,16 @@ In the file that you are working in, declare your database (or databases) at the
 ```javascript
 let Database = require('./database.js');
 
-async function initDbs() {
+async function initDb(name) {
 
-let myDb = new Database('myDb');
-// let myOtherDb new Database('myOtherDb');
+let db = new Database(name);
 
-await myDb.connect();
-// await myOtherDb.connect();
+await db.connect();
+
+return db
 }
 
-initDbs();
+let myDb = initDb('myDb');
 ```
 Utilizing the async/await syntax allows us to avoid callback hell. When this is initialized in this way, the methods on myDb or myOtherDb will be available globally. When running .connect(), the app will connect to the mysql database with the name you passed into the constructor (myDb and myOtherDb in this case). If the database does not exist, it will create a new database with that name. 
 
