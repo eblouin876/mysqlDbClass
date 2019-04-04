@@ -10,8 +10,10 @@ This is a file that exports a class database. The purpose of this project is to 
 
 ## Instructions
 To use the database class in a node based project, clone database.js into your directory. Make sure you have dotenv and mysql installed for your project (run ```npm install mysql dotenv``` if you don't). Create a .env file with 
-```DB_USER='vsc'```
-```DB_PASS='vscode'```
+```
+DB_USER='my_user'
+DB_PASS='my_pass'
+```
 
 
 
