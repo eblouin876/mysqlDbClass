@@ -19,6 +19,7 @@ In the file that you are working in, declare your database (or databases) at the
 let Database = require('./database.js');
 
 let myDb = "";
+
 async function initDb() {
 
 let myDb = new Database("myDb");
