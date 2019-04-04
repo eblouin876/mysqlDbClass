@@ -47,10 +47,10 @@ class Database {
    * @note Use {} if building a table based on another table
    * @param {string} other - OPTIONAL: Existing table to build new table from
    * @param {[string]} otherCol - OPTIONAL: Array of strings that refer to the column names from the existing table. (Will accept *)
-   * @param {string} specifier - OPTIONAL: Logic to go inside a WHERE statement. Should be in form similar to: column_name = value AND column_name = value
+   * @param {string} identifiers - OPTIONAL: Logic to go inside a WHERE statement. Should be in form similar to: column_name = value AND column_name = value
    * @description - Asynchronous function. Call with await db.makeTable(table, columns, other, otherCol, specifier). Will only create a table if one with that name does not exist
    */
-  async makeTable(table, columns, other, otherCol, specifier) {
+  async makeTable(table, columns, other, otherCol, identifiers) {
     let tableName = `${this.db}.${table}`;
     if (!other) {
       let rawCol = [];
@@ -66,8 +66,8 @@ class Database {
       if (otherCol) {
         otherCols = `${otherCol.join(", ")}`;
       }
-      if (specifier) {
-        spec = ` WHERE ${specifier}`;
+      if (identifiers) {
+        spec = ` WHERE ${identifiers}`;
       }
       await this.query(
         `CREATE TABLE IF NOT EXISTS ${tableName} AS SELECT ${otherCols} FROM ${otherTable}${spec}`
@@ -114,11 +114,15 @@ class Database {
   /**
    *
    * @param {string} table - Name of the table where the delete will be preformed
-   * @param {string} key - Value that represents the unique key of the entry that you are updating and its reference column. Should be in the form "column_name = unique_key". **Does not accept * as a character**
+   * @param {string} key - OPTIONAL: Value that represents the unique key of the entry that you are updating and its reference column. Should be in the form "column_name = unique_key".
    * @description - Asynchronous function. Call with await db.update(table, update, key).
    */
   async delete(table, key) {
-    await this.query(`DELETE FROM ${this.db}.${table} WHERE ${key}`);
+    if (key) {
+      await this.query(`DELETE FROM ${this.db}.${table} WHERE ${key}`);
+    } else {
+      await this.query(`DELETE FROM ${this.db}.${table}`);
+    }
   }
 
   /**
