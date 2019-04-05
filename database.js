@@ -22,7 +22,7 @@ class Database {
    *
    * @param {string} table - Name of the table to insert into
    * @param {[string]} columns - Array containing the names of the columns to insert into
-   * @param {[[*]]} values - Array of arrays containing the values to insert
+   * @param {[[*]]} values - Array of arrays containing the values to insert **Each array must have an equal number of values to the columns being added**
    * @description - Asynchronous function. Call with await db.create(table, columns, values)
    */
   async create(table, columns, values) {
@@ -43,7 +43,7 @@ class Database {
   /**
    *
    * @param {string} table - Name of the table to create
-   * @param {{string: string}} columns - Array containing key value pairs of column names and SQL types (e.g. VARCHAR(50) NOT NULL or INT NOT NULL AUTO_INCREMENT PRIMARY KEY). (Use an empty string if you are building from a different table)
+   * @param {{string: string}} columns - Object containing key value pairs of column names and SQL types (e.g. VARCHAR(50) NOT NULL or INT NOT NULL AUTO_INCREMENT PRIMARY KEY). (Use an empty string if you are building from a different table)
    * @param {string} other - OPTIONAL: Existing table to build new table from
    * @param {[string]} otherCol - OPTIONAL: Array of strings that refer to the column names from the existing table. (Will accept *)
    * @param {string} identifiers - OPTIONAL: Logic to go inside a WHERE statement. Should be in form similar to: column_name = value AND column_name = value
@@ -77,48 +77,45 @@ class Database {
   /**
    *
    * @param {string} table - Name of the table you are reading from
-   * @param {[string]} properties - Array of strings of the column names you would like to select (will accept * in array)
-   * @param {string} identifiers - OPTIONAL: String that defines the where statement. Should be in form similar to: column_name = value AND column_name = value
+   * @param {[string]} properties - Array of strings of the column names you would like to select (Use ["*"] to select all)
+   * @param {string} identifiers - OPTIONAL: Object where the {key: value} pairs represent the column and identifier you wish to taget. {unique_column: unique_id}
    * @description - Asynchronous function. Call with await db.read(table, properties, identifiers)
    */
   async read(table, properties, identifiers) {
-    let where = "";
-    if (identifiers) {
-      where = ` WHERE ${identifiers}`;
-    }
     let props = properties.join(", ");
-
-    return await this.query(`SELECT ${props} FROM ${this.db}.${table}${where}`);
+    if (identifiers) {
+      return await this.query(
+        `SELECT ${props} FROM ${this.db}.${table} WHERE ?`,
+        [identifiers]
+      );
+    } else {
+      return await this.query(`SELECT ${props} FROM ${this.db}.${table}`);
+    }
   }
 
   /**
    *
    * @param {string} table - Name of the table where the update will be performed
-   * @param {{string: *}} update - Array of key value pairs that are the column name and the value to be updated
-   * @param {string} key - Value that represents the unique key of the entry that you are updating and its reference column. Should be in the form "column_name = unique_key"
+   * @param {{string: *}} update - Object of key value pairs that are the column name and the value to be updated
+   * @param {string} key - Object where the key: value pairs represent the column and identifier you wish to taget. {unique_column: unique_id}
    * @description - Asynchronous function. Call with await db.update(table, update, key)
    */
   async update(table, update, key) {
-    // Update is being seen as an object, but when stringified it makes the key/value pair both strings
-    let vals = [];
-    for (let key in update) {
-      let str = `${key} = "${update[key]}"`;
-      vals.push(str);
-    }
-
-    await this.query(
-      `UPDATE ${this.db}.${table} SET ${vals.join(", ")} WHERE ${key}`
-    );
+    await this.query(`UPDATE ${this.db}.${table} SET ? WHERE ?`, [
+      update,
+      key
+    ]).catch(err => console.log(err));
   }
+
   /**
    *
    * @param {string} table - Name of the table where the delete will be preformed
-   * @param {string} key - OPTIONAL: Value that represents the unique key of the entry that you are updating and its reference column. Should be in the form "column_name = unique_key".
+   * @param {string} key - Object where the key: value pairs represent the column and identifier you wish to taget. {unique_column: unique_id}
    * @description - Asynchronous function. Call with await db.update(table, update, key).
    */
   async delete(table, key) {
     if (key) {
-      await this.query(`DELETE FROM ${this.db}.${table} WHERE ${key}`);
+      await this.query(`DELETE FROM ${this.db}.${table} WHERE ?`, [key]);
     } else {
       await this.query(`DELETE FROM ${this.db}.${table}`);
     }
@@ -127,18 +124,18 @@ class Database {
   /**
    *
    * @param {string} command - SQL command if needed for a custom query
-   * @param {[[*]]} values - OPTIONAL: Array of arrays for values on an insert or update query
-   * @description - Asynchronous function. Call with await db.query(command, values)
+   * @param {[*]} escapes - OPTIONAL: Array of the escaspes in your query
+   * @description - Asynchronous function. Call with await db.query(command, values). Typically not necessary for the user
    */
-  query(command, values) {
+  query(command, escapes) {
     return new Promise((resolve, reject) => {
-      if (!values) {
+      if (!escapes) {
         this.connection.query(command, async (err, results) => {
           if (results) resolve(results);
           reject(err);
         });
       } else {
-        this.connection.query(command, values, async (err, results) => {
+        this.connection.query(command, escapes, async (err, results) => {
           if (results) resolve(results);
           reject(err);
         });
@@ -153,8 +150,8 @@ class Database {
   connect() {
     return new Promise((resolve, reject) => {
       this.connection = mysql.createConnection({
-        host: process.env.HOST || "localhost",
-        port: process.env.PORT || 8080,
+        host: "localhost",
+        port: process.env.PORT || 3306,
         user: process.env.DB_USER,
         password: process.env.DB_PASS
       });
