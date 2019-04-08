@@ -16,6 +16,7 @@ class Database {
     this.connection = "";
     this.databases = "";
     this.db = db_name;
+    this.connect();
   }
 
   /**

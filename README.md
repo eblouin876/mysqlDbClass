@@ -26,16 +26,10 @@ let Database = require("./database.js");
 
 let myDb = "";
 
-async function initDb() {
-  let myDb = new Database("myDb");
-
-  await db.connect();
-}
-
-initDb();
+let myDb = new Database("myDb");
 ```
 
-Utilizing the async/await syntax allows us to avoid callback hell. When this is initialized in this way, the methods on myDb or myOtherDb will be available globally. When running .connect(), the app will connect to the mysql database with the name you passed into the constructor (myDb and myOtherDb in this case). If the database does not exist, it will create a new database with that name.
+Utilizing the async/await syntax allows us to avoid callback hell. When this is initialized in this way, the methods on myDb will be available globally. If the database does not exist, it will create a new database with that name.
 
 ## Methods
 
