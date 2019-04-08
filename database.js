@@ -21,11 +21,10 @@ class Database {
   /**
    *
    * @param {string} table - Name of the table to insert into
-   * @param {[string]} columns - Array containing the names of the columns to insert into
-   * @param {[[*]]} values - Array of arrays containing the values to insert **Each array must have an equal number of values to the columns being added**
-   * @description - Asynchronous function. Call with await db.create(table, columns, values)
+   * @param {{string: *}} values - Object containing key value pairs where they key is the column name and the value is the value to insert
+   * @description - Asynchronous function. Call with await db.create(table, values)
    */
-  async create(table, columns, values) {
+  async create(table, values) {
     let dbs = await this.getDatabases();
     let dbTables = Object.keys(dbs[this.db]);
 
@@ -34,10 +33,8 @@ class Database {
       return;
     }
 
-    let sql = `INSERT INTO  ${this.db}.${table} (${columns.join(
-      ", "
-    )}) VALUES ?`;
-    await this.query(sql, [values]).catch(err => console.log(err));
+    let sql = `INSERT INTO  ${this.db}.${table} SET ?`;
+    await this.query(sql, values).catch(err => console.log(err));
   }
 
   /**
@@ -77,12 +74,17 @@ class Database {
   /**
    *
    * @param {string} table - Name of the table you are reading from
-   * @param {[string]} properties - Array of strings of the column names you would like to select (Use ["*"] to select all)
+   * @param {[string]} properties - Array of strings of the column names you would like to select (Use "*" to select all)
    * @param {string} identifiers - OPTIONAL: Object where the {key: value} pairs represent the column and identifier you wish to taget. {unique_column: unique_id}
    * @description - Asynchronous function. Call with await db.read(table, properties, identifiers)
    */
   async read(table, properties, identifiers) {
-    let props = properties.join(", ");
+    let props = "";
+    if (properties === "*") {
+      props = properties;
+    } else {
+      props = properties.join(", ");
+    }
     if (identifiers) {
       return await this.query(
         `SELECT ${props} FROM ${this.db}.${table} WHERE ?`,
