@@ -34,8 +34,10 @@ class Database {
       return;
     }
 
-    let sql = `INSERT INTO  ${this.db}.${table} SET ?`;
-    await this.query(sql, values).catch(err => console.log(err));
+    let sql = `INSERT INTO ?? SET ?`;
+    await this.query(sql, [`${this.db}.${table}`, values]).catch(err =>
+      console.log(err)
+    );
   }
 
   /**
@@ -55,7 +57,7 @@ class Database {
         rawCol.push(`${key} ${columns[key]}`);
       }
       let cols = `(${rawCol.join(", ")})`;
-      await this.query(`CREATE TABLE IF NOT EXISTS ${tableName} ${cols}`);
+      await this.query(`CREATE TABLE IF NOT EXISTS ?? ?`, [tableName, cols]);
     } else {
       let otherTable = `${this.db}.${other}`;
       let otherCols = "";
@@ -67,7 +69,8 @@ class Database {
         spec = ` WHERE ${identifiers}`;
       }
       await this.query(
-        `CREATE TABLE IF NOT EXISTS ${tableName} AS SELECT ${otherCols} FROM ${otherTable}${spec}`
+        `CREATE TABLE IF NOT EXISTS ?? AS SELECT ?? FROM ?? WHERE ?`,
+        [tableName, otherCols, otherTable, identifiers]
       );
     }
   }
@@ -87,12 +90,16 @@ class Database {
       props = properties.join(", ");
     }
     if (identifiers) {
-      return await this.query(
-        `SELECT ${props} FROM ${this.db}.${table} WHERE ?`,
-        [identifiers]
-      );
+      return await this.query(`SELECT ?? FROM ?? WHERE ?`, [
+        props,
+        `${this.db}.${table}`,
+        identifiers
+      ]);
     } else {
-      return await this.query(`SELECT ${props} FROM ${this.db}.${table}`);
+      return await this.query(`SELECT ?? FROM ??`, [
+        props,
+        `${this.db}.${table}`
+      ]);
     }
   }
 
@@ -104,7 +111,8 @@ class Database {
    * @description - Asynchronous function. Call with await db.update(table, update, key)
    */
   async update(table, update, key) {
-    await this.query(`UPDATE ${this.db}.${table} SET ? WHERE ?`, [
+    await this.query(`UPDATE ?? SET ?? WHERE ?`, [
+      `${this.db}.${table}`,
       update,
       key
     ]).catch(err => console.log(err));
@@ -118,9 +126,11 @@ class Database {
    */
   async delete(table, key) {
     if (key) {
-      await this.query(`DELETE FROM ${this.db}.${table} WHERE ?`, [key]);
+      await this.query(`DELETE FROM ?? WHERE ?`, [`${this.db}.${table}`, key]);
     } else {
-      await this.query(`DELETE FROM ${this.db}.${table}`);
+      await this.query(`DELETE FROM ${this.db}.${table}`, [
+        `${this.db}.${table}`
+      ]);
     }
   }
 
